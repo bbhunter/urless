@@ -1,5 +1,11 @@
 ## Changelog
 
+- v2.3
+
+  - Fixed
+
+    - Remove TTY-gating that silences output in non-TTY environments like Docker, CI, or cron jobs. The --no-banner flag and -o/--output already provide users control over output, so the extra TTY checks only broke non-interactive usage. Thanks to [@tavgar](https://github.com/tavgar) for the fix in [PR #15](https://github.com/xnl-h4ck3r/urless/pull/15).
+
 - v2.2
 
   - New
