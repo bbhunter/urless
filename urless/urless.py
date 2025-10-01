@@ -33,6 +33,9 @@ FILTER_EXTENSIONS = ''
 FILTER_KEYWORDS = ''
 LANGUAGE = ''
 REMOVE_PARAMS = ''
+reFilterKeywords = ''
+badExtensions = ()
+
 
 # Regex delimiters
 REGEX_START = '^'
@@ -117,7 +120,7 @@ def getConfig():
     '''
     Try to get the values from the config file, otherwise use the defaults
     '''
-    global FILTER_EXTENSIONS, FILTER_KEYWORDS, LANGUAGE, REMOVE_PARAMS, reLangPart, usingConfigDefaults
+    global FILTER_EXTENSIONS, FILTER_KEYWORDS, LANGUAGE, REMOVE_PARAMS, reLangPart, usingConfigDefaults, reFilterKeywords, badExtensions
     try:
 
         # Try to get the config file values
@@ -152,6 +155,7 @@ def getConfig():
                 except Exception as e:
                     writerr(colored('Unable to read FILTER_EXTENSIONS from config.yml - default set', 'red'))
                     FILTER_KEYWORDS = DEFAULT_FILTER_KEYWORDS
+            reFilterKeywords = re.compile(FILTER_KEYWORDS.replace(',','|'), re.IGNORECASE)
             
             # If the user provided the --filter-extensions argument then it overrides the config value
             if args.filter_extensions:
@@ -165,6 +169,7 @@ def getConfig():
                 except Exception as e:
                     writerr(colored('Unable to read FILTER_EXTENSIONS from config.yml - default set', 'red'))
                     FILTER_EXTENSIONS = DEFAULT_FILTER_EXTENSIONS
+            badExtensions = tuple(ext.lower() for ext in FILTER_EXTENSIONS.split(','))
             
             # If the user provided the --language argument then create the regex for language codes
             if args.language:  
@@ -208,6 +213,8 @@ def getConfig():
             FILTER_KEYWORDS = DEFAULT_FILTER_KEYWORDS
             LANGUAGE = DEFAULT_LANGUAGE
             REMOVE_PARAMS = DEFAULT_REMOVE_PARAMS
+            reFilterKeywords = re.compile(FILTER_KEYWORDS.replace(',','|'), re.IGNORECASE)
+            badExtensions = tuple(ext.lower() for ext in FILTER_EXTENSIONS.split(','))
             
     except Exception as e:
         writerr(colored('ERROR getConfig 1: ' + str(e), 'red'))
@@ -378,9 +385,9 @@ def hasFilterKeyword(path: str) -> bool:
     '''
     checks if the url matches the blacklist regex
     '''
-    global FILTER_KEYWORDS
+    global reFilterKeywords
     try:
-        return re.search(FILTER_KEYWORDS.replace(',','|'), path, re.IGNORECASE)
+        return reFilterKeywords.search(path)
     except Exception as e:
         writerr(colored('ERROR hasFilterKeyword 1: ' + str(e), 'red'))
 
@@ -388,15 +395,9 @@ def hasBadExtension(path: str) -> bool:
     '''
     checks if a url has a blacklisted extension
     '''
-    global FILTER_EXTENSIONS
+    global badExtensions
     try:
-        badExtension = False
-        if '/' not in path.split('.')[-1]:
-            extensions = FILTER_EXTENSIONS.split(',')
-            for extension in extensions:
-                if path.lower().endswith(extension.lower()):
-                    badExtension = True
-        return badExtension
+        return path.lower().endswith(badExtensions)
     except Exception as e:
         writerr(colored('ERROR hasBadExtension 1: ' + str(e), 'red'))
 
@@ -518,18 +519,13 @@ def processInput():
                 result = chardet.detect(f.read())  # or readline if the file is large
                 
             try:
-                inFile = open(os.path.expanduser(args.input), 'r', encoding=result['encoding'])
-                lines = inFile.readlines()
-                linesOrigCount = len(lines)
-                for line in lines:
-                    processUrl(processLine(line))
+                linesOrigCount = 0
+                with open(os.path.expanduser(args.input), 'r', encoding=result['encoding']) as inFile:
+                    for line in inFile:
+                        linesOrigCount += 1
+                        processUrl(processLine(line))
             except Exception as e:
-                writerr(colored('ERROR processInput 2 ' + str(e), 'red'))    
-
-            try:
-                inFile.close()
-            except:
-                pass        
+                writerr(colored('ERROR processInput 2 ' + str(e), 'red'))        
     except Exception as e:
         writerr(colored('ERROR processInput 1: ' + str(e), 'red'))  
         

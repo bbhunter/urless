@@ -1,5 +1,11 @@
 ## Changelog
 
+- v2.4
+
+  - Changed
+
+    - Various optimizations to improve performance, e.g. Pre-compiled Regular Expressions, Optimized Extension Filtering and Memory-Efficient File Processing.
+
 - v2.3
 
   - Fixed
