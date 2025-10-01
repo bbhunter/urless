@@ -75,19 +75,20 @@ def verbose():
     '''
     return args.verbose
 
-def write(text='',pipe=False):
-    # Only send text to stdout if the tool isn't piped to pass output to something else, 
-    # or if the tool has been piped and the pipe parameter is True
-    if sys.stdout.isatty() or (not sys.stdout.isatty() and pipe):
-        sys.stdout.write(text+'\n')
+def write(text=''):
+    """
+    Always print one line to stdout.
+    The --no-banner flag and -o/--output already give users
+    control over noise and redirection, so extra TTY checks only
+    break non-interactive usage (Docker, CI, cron).
+    """
+    sys.stdout.write(text + '\n')
 
 def writerr(text=''):
-    # Only send text to stdout if the tool isn't piped to pass output to something else, 
-    # or If the tool has been piped to output the send to stderr
-    if sys.stdout.isatty():
-        sys.stdout.write(text+'\n')
-    else:
-        sys.stderr.write(text+'\n')
+    """
+    Always print one line to stderr.
+    """
+    sys.stderr.write(text + '\n')
 
 def showVersion():
     try:
@@ -579,7 +580,7 @@ def processOutput():
                         else:    
                             # If output is piped or the --output argument was not specified, output to STDOUT
                             if not sys.stdin.isatty() or args.output is None:
-                                write(host + path + dictToParams(param),True)
+                                write(host + path + dictToParams(param))
                 else:
                     linesFinalCount = linesFinalCount + 1
                     # If an output file was specified, write to the file
@@ -588,7 +589,7 @@ def processOutput():
                     else:    
                         # If output is piped or the --output argument was not specified, output to STDOUT
                         if not sys.stdin.isatty() or args.output is None:
-                            write(host + path,True)
+                            write(host + path)
         
         if verbose() and sys.stdin.isatty():
             writerr(colored('\nInput reduced from '+str(linesOrigCount)+' to '+str(linesFinalCount)+' lines 🤘', 'cyan'))
@@ -838,4 +839,3 @@ def main():
            
 if __name__ == '__main__':
     main()
-    
