@@ -1,5 +1,12 @@
 ## Changelog
 
+- v2.5
+
+  - Changed
+
+    - Fix the issue of it saying the version is outdated when it is the latest version.
+    - Applied black code formatting to `__init__.py`, `setup.py`, and `urless.py` to ensure consistent code style.
+
 - v2.4
 
   - Changed
