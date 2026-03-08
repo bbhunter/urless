@@ -19,7 +19,11 @@ from pathlib import Path
 
 try:
     from . import __version__
-    import requests
+    import warnings
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        import requests
 except Exception:
     pass
 
@@ -320,6 +324,50 @@ def getConfig():
 
     except Exception as e:
         writerr(colored("ERROR getConfig 1: " + str(e), "red"))
+
+
+def ensureConfig():
+    """
+    Ensure the config.yml file exists in the default config directory.
+    If not, create the directory and write the default config.
+    This is called before argument parsing so the file is created
+    even when running 'urless' or 'urless -h'.
+    """
+    try:
+        # Determine the config directory based on OS
+        if os.name == "nt":
+            urlessPath = Path(os.path.join(os.getenv("APPDATA", ""), "urless"))
+        elif os.name == "posix":
+            urlessPath = Path(
+                os.path.join(os.path.expanduser("~"), ".config", "urless")
+            )
+        else:
+            urlessPath = Path(
+                os.path.join(
+                    os.path.expanduser("~"),
+                    "Library",
+                    "Application Support",
+                    "urless",
+                )
+            )
+
+        configPath = urlessPath / "config.yml"
+
+        # If the config file doesn't exist, create it with default values
+        if not configPath.exists():
+            try:
+                urlessPath.mkdir(parents=True, exist_ok=True)
+                with open(configPath, "w") as f:
+                    f.write(f"FILTER_KEYWORDS: {DEFAULT_FILTER_KEYWORDS}\n")
+                    f.write(f"FILTER_EXTENSIONS: {DEFAULT_FILTER_EXTENSIONS}\n")
+                    f.write(f"LANGUAGE: {DEFAULT_LANGUAGE}\n")
+                    f.write(f"REMOVE_PARAMS: {DEFAULT_REMOVE_PARAMS}\n")
+            except Exception as e:
+                writerr(
+                    colored("WARNING: Could not create config.yml: " + str(e), "yellow")
+                )
+    except Exception as e:
+        writerr(colored("ERROR ensureConfig: " + str(e), "red"))
 
 
 def handler(signal_received, frame):
@@ -911,6 +959,9 @@ def argCheckRegexCustomID(value):
 def main():
 
     global args, urlmap, patternsSeen, patternsInt, patternsCustomID, patternsGUID, patternsLang
+
+    # Ensure config.yml exists before anything else
+    ensureConfig()
 
     # Tell Python to run the handler() function when SIGINT is received
     signal(SIGINT, handler)

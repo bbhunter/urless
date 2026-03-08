@@ -1,5 +1,11 @@
 ## Changelog
 
+- v2.6
+
+  - New
+    - If the `config.yml` file is not found in the expected config directory (e.g. `~/.config/urless/` on Linux or `%APPDATA%/urless/` on Windows), it will be automatically created with default values. This fixes the issue where installing with `pipx` did not create the `config.yml` file.
+    - Surpresses the warning about `requests` not being able to import `urllib3`.
+
 - v2.5
 
   - Changed
