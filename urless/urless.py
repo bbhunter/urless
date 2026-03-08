@@ -30,8 +30,8 @@ except Exception:
 # Default values if config.yml not found
 DEFAULT_FILTER_EXTENSIONS = ".css,.ico,.jpg,.jpeg,.png,.bmp,.svg,.img,.gif,.mp4,.flv,.ogv,.webm,.webp,.mov,.mp3,.m4a,.m4p,.scss,.tif,.tiff,.ttf,.otf,.woff,.woff2,.bmp,.ico,.eot,.htc,.rtf,.swf,.image"
 DEFAULT_FILTER_KEYWORDS = "blog,article,news,bootstrap,jquery,captcha,node_modules"
-DEFAULT_LANGUAGE = "en,en-us,en-gb,fr,de,pl,nl,fi,sv,it,es,pt,ru,pt-br,es-mx,zh-tw,js.ko,gb-en,ca-en,au-en,fr-fr,ca-fr,es-es,mx-es,de-de,it-it,br-pt,pt-pt,jp-ja,cn-zh,tw-zh,kr-ko,sa-ar,in-hi,ru-ru"
-DEFAULT_REMOVE_PARAMS = "_"
+DEFAULT_LANGUAGE = "en,en-us,en-gb,fr,de,pl,nl,fi,sv,it,es,pt,ru,pt-br,es-mx,zh-tw,ja,ko,gb-en,ca-en,au-en,fr-fr,ca-fr,es-es,mx-es,de-de,it-it,br-pt,pt-pt,jp-ja,cn-zh,tw-zh,kr-ko,sa-ar,in-hi,ru-ru"
+DEFAULT_REMOVE_PARAMS = "_,cachebuster,cacheBuster,utm_source,utm_medium,utm_campaign,utm_content,utm_term,utm_adgroup,utm_custom,utm_name"
 
 # Variables to hold config.yml values
 FILTER_EXTENSIONS = ""

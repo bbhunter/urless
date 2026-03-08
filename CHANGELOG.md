@@ -1,10 +1,17 @@
 ## Changelog
 
-- v2.6
+- v2.7
 
   - New
     - If the `config.yml` file is not found in the expected config directory (e.g. `~/.config/urless/` on Linux or `%APPDATA%/urless/` on Windows), it will be automatically created with default values. This fixes the issue where installing with `pipx` did not create the `config.yml` file.
     - Surpresses the warning about `requests` not being able to import `urllib3`.
+
+- v2.6
+
+  - Changed
+
+    - BUG FIX: Change the type `js.ko` to `ja,ko` in `LANGUAGE` within `config.yml` and `DEFAULT_LANGUAGE` within `urless.py`
+    - Set `DEFAULT_REMOVE_PARAMS` and the `REMOVE_PARAMS` in `config.yml` file to `_,cachebuster,cacheBuster,utm_source,utm_medium,utm_campaign,utm_content,utm_term,utm_adgroup,utm_custom,utm_name` in `urless.py`. These was a mismatch between the two files. Also, the Google Analytics parameters should be removed by default.
 
 - v2.5
 
